@@ -1,0 +1,69 @@
+services:
+  db:
+    image: postgres:15
+    container_name: drupal-postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres  # Set to default to avoid FATAL: database "root" does not exist
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      bash -c "
+        docker-entrypoint.sh postgres &
+        sleep 10 &&
+        psql -U root -d postgres -c 'CREATE DATABASE customer;' &&
+        psql -U root -d postgres -c 'CREATE DATABASE admin;' &&
+        psql -U root -d postgres -c 'CREATE DATABASE partner;' &&
+        psql -U root -d postgres -c 'CREATE DATABASE compliance;'
+      "
+
+  customer:
+    image: drupal:10-apache
+    container_name: drupal-customer
+    ports:
+      - "8081:80"
+    volumes:
+      - ../../../policyflow-customer-portal:/var/www/html
+    depends_on:
+      - db
+
+  admin:
+    image: drupal:10-apache
+    container_name: drupal-admin
+    ports:
+      - "8082:80"
+    volumes:
+      - ../../../policyflow-admin-portal:/var/www/html
+    depends_on:
+      - db
+
+  partner:
+    image: drupal:10-apache
+    container_name: drupal-partner
+    ports:
+      - "8083:80"
+    volumes:
+      - ../../../policyflow-partner-portal:/var/www/html
+    depends_on:
+      - db
+
+  compliance:
+    image: drupal:10-apache
+    container_name: drupal-compliance
+    ports:
+      - "8084:80"
+    volumes:
+      - ../../../policyflow-compliance-portal:/var/www/html
+    depends_on:
+      - db
+
+volumes:
+  pg_data:

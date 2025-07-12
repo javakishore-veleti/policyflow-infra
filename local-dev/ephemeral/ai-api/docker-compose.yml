@@ -1,0 +1,12 @@
+services:
+  agentic-api:
+    image: python:3.11
+    container_name: policyflow-ai-api
+    working_dir: /app
+    volumes:
+      - ../../../policyflow-agentic-api:/app
+    ports:
+      - "5050:5050"
+    command: sh -c "pip install -r requirements.txt && python main.py"
+    environment:
+      - PYTHONUNBUFFERED=1

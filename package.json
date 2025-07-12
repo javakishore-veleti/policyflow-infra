@@ -1,0 +1,12 @@
+{
+  "name": "policyflow-infra",
+  "version": "1.0.0",
+  "scripts": {
+    "start:drupal": "./start.sh drupal",
+    "start:nextjs": "./start.sh nextjs",
+    "start:vector-db": "./start.sh vector-db",
+    "start:ai-api": "./start.sh ai-api",
+    "start:all": "./start-all.sh",
+    "stop:all": "./stop-all.sh"
+  }
+}
